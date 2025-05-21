@@ -1,0 +1,142 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Sadex</title>
+    <link rel="stylesheet" href="~/assets/css/plugins.bundle.css" />
+    <link rel="stylesheet" href="~/assets/css/style.bundle.css" />
+    <link rel="stylesheet" href="~/lib/animate.css/animate.min.css" />
+    @await RenderSectionAsync("Styles", required: false)
+    <link rel="stylesheet" href="~/css/FormStyle.css" asp-append-version="true" />
+</head>
+<body>
+    <script>var defaultThemeMode = "light"; var themeMode; if (document.documentElement) { if (document.documentElement.hasAttribute("data-theme-mode")) { themeMode = document.documentElement.getAttribute("data-theme-mode"); } else { if (localStorage.getItem("data-theme") !== null) { themeMode = localStorage.getItem("data-theme"); } else { themeMode = defaultThemeMode; } } if (themeMode === "system") { themeMode = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"; } document.documentElement.setAttribute("data-theme", themeMode); }</script>
+    <nav class="navbar navbar-expand-lg bg-main p-3">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#"><img src="~/assets/images/logo.webp" style="width: 220px;" /></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav w-100">
+                    <li class="nav-item mx-auto text-center">
+                        <ul class="navbar-nav mx-auto text-center">
+                            <li class="nav-item">
+                                <a class="nav-link" aria-current="page" href="https://sadex-sa.com/ar/%d8%a7%d9%84%d8%b1%d8%a6%d9%8a%d8%b3%d9%8a%d8%a9/">الرئيسية</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"> اللغة </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#">العربية</a></li>
+                                    <li><a class="dropdown-item" href="#">English</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item ms-auto " style="margin: 0 !important;">
+                        <ul class="navbar-nav mx-auto text-center">
+                            <li class="nav-item">
+                                <button class="btn btn-second nav-button">
+                                    <a class="nav-link" aria-current="page" href="#">احجز مساحتك</a>
+                                </button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="btn btn-second nav-button">
+                                    <a class="nav-link" aria-current="page" href="#">التسجيل للزياره</a>
+                                </button>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    @RenderBody()
+    <footer class="mt-5">
+        <div class="container-fluid w-95 mx-auto text-center">
+            <div class="row">
+                <div class="col-md-2">
+                    <h3>وقت العرض</h3>
+                    <p>6th Oct الاثنين</p>
+                    <p>6th Oct الاثنين</p>
+                    <p>6th Oct الاثنين</p>
+                </div>
+                <div class="col-md-2 border-end-op">
+                    <h3>الوقت</h3>
+                    <p>15:00-22:00 الاثنين</p>
+                    <p>15:00-22:00 الثلاثاء</p>
+                    <p>15:00-22:00 الاربعاء</p>
+                    <h3>روابط هامة</h3>
+                    <p><a href="https://sadex-sa.com/ar/%d8%b3%d9%8a%d8%a7%d8%b3%d8%a9-%d8%a7%d9%84%d8%ae%d8%b5%d9%88%d8%b5%d9%8a%d8%a9/">سياسة الخصوصية</a></p>
+                </div>
+                <div class="col-md-4 border-end-op">
+                    <div>
+                        <img src="~/assets/images/logo.webp" class="w-100 mx-auto text-center" />
+                    </div>
+                    <div class="d-flex justify-content-center mt-3 mx-auto">
+                        <a href="https://www.facebook.com/profile.php?id=61564670313402" class="footer-icon"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="https://x.com/SADEX_SA1" class="footer-icon"><i class="fa-brands fa-twitter"></i></a>
+                        <a href="https://www.instagram.com/saudidronesaadef/" class="footer-icon"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="https://www.linkedin.com/company/101278312" class="footer-icon"><i class="fa-brands fa-linkedin"></i></a>
+                        <a href="https://www.youtube.com/channel/UCm7IWdVkzn_v03W6nrVcynQ" class="footer-icon"><i class="fa-brands fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-2 border-end-op text-center">
+                    <h3>الموقع</h3>
+                    <a href="https://maps.app.goo.gl/fDwS2vJAEhKnjwEx6" target="_blank" class="d-flex justify-content-center align-items-baseline">
+                        <i class="fa-solid fa-location-dot me-2"></i>
+                        <p>The Arena Riyadh Venue for Exhibitions</p>
+                    </a>
+                    <a href="https://www.thearenaksa.com/" target="_blank" class="d-flex justify-content-center align-items-baseline">
+                        <i class="fa-solid fa-globe me-2"></i>
+                        <p>www.scega.gov.sa</p>
+                    </a>
+                    <div>
+                        <iframe class="w-100" loading="lazy" src="https://maps.google.com/maps?q=The%20Arena%20Riyadh%20Venue%20for%20Exhibitions%20%7C%20%D9%85%D8%B1%D9%83%D8%B2%20%D8%B0%D9%8A%20%D8%A3%D8%B1%D9%8A%D9%86%D8%A7%20%D8%A7%D9%84%D8%B1%D9%8A%D8%A7%D8%B6%20%D9%84%D9%84%D9%85%D8%B9%D8%A7%D8%B1%D8%B6%20%D9%88%D8%A7%D9%84%D9%81%D8%B9%D8%A7%D9%84%D9%8A%D8%A7%D8%AA&amp;t=m&amp;z=11&amp;output=embed&amp;iwloc=near" title="The Arena Riyadh Venue for Exhibitions | مركز ذي أرينا الرياض للمعارض والفعاليات" aria-label="The Arena Riyadh Venue for Exhibitions | مركز ذي أرينا الرياض للمعارض والفعاليات"></iframe>
+                    </div>
+                </div>
+                <div class="col-md-2 border-end-op">
+                    <h3>تواصل معنا</h3>
+                    <p>
+                        <a href="tel:+966115207943">
+                            <i class="fa-solid fa-phone me-2"></i>
+                            <span class="elementor-icon-list-text">966115207943+</span>
+                        </a>
+                    </p>
+                    <p>
+                        <a href="https://wa.me/+966566088444">
+                            <i class="fa-brands fa-whatsapp me-2"></i>
+                            <span class="elementor-icon-list-text">966566088444+</span>
+                        </a>
+                    </p>
+                    <p>
+                        <a href="mailto:pr@sadex-sa.com">
+                            <i class="fa-regular fa-envelope me-2"></i>
+                            <span class="elementor-icon-list-text">pr@sadex-sa.com</span>
+                        </a>
+                    </p>
+                    <p>
+                        <a href="mailto:info@digital-image.co">
+                            <i class="fa-regular fa-envelope me-2"></i>
+                            <span class="elementor-icon-list-text">info@digital-image.co</span>
+                        </a>
+                    </p>
+                </div>
+                <div class="col-md-12">
+                    <div class="copyright text-capitalize p-3 mt-3">
+                        Copyright © SADEX 2025, All Rights Reserved.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script src="~/assets/js/plugins.bundle.js"></script>
+    <script src="~/assets/js/scripts.bundle.js"></script>
+    <!--end::Global Javascript Bundle-->
+    <script src="~/lib/bootbox.js/bootbox.min.js"></script>
+    @await RenderSectionAsync("Plugins", required: false)
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,14 @@
+[
+  {
+    "Name": "زائر",
+    "TemplateType" :  1
+  },
+  {
+    "Name": "راعي",
+    "TemplateType": 2
+  },
+  {
+    "Name": "مساحة",
+    "TemplateType": 3
+  }
+]

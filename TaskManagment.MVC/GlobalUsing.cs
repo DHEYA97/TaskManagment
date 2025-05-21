@@ -1,0 +1,11 @@
+﻿global using FluentValidation;
+global using Mapster;
+global using Microsoft.AspNetCore.Mvc;
+global using Microsoft.EntityFrameworkCore;
+global using TaskManagment.Core.Abstractions.Const;
+global using TaskManagment.Core.Entities.Identity;
+global using TaskManagment.Core.Service;
+global using TaskManagment.Core.Specification.EntitySpecification;
+global using TaskManagment.ServiceAndFactore.Factore;
+global using Microsoft.AspNetCore.Localization;
+global using System.Globalization;
