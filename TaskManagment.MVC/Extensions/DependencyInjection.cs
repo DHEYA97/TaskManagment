@@ -49,6 +49,7 @@ namespace TaskManagment.Mvc.Extensions
                     .AddDataProtectionConfig()
                     .AddExpressiveAnnotationsConfig()
                     .AddMigrationsEndPointConfig()
+                    .AddSignalRConfig()
                     .AddLocalizationConf(cultures);
 
 
@@ -82,7 +83,7 @@ namespace TaskManagment.Mvc.Extensions
         {
             services.AddScoped(typeof(IGenericRepositories<>), typeof(GenericRepositories<>));
             services.AddScoped<IUnitOfWork, UnitOfWork>();
-            services.AddScoped<IImageService, ImageService>();
+            services.AddScoped<IFileService, FileService>();
             services.AddScoped<IEmailSender, EmailService>();
             services.AddScoped<ISeedingData, SeedingData>();
             services.AddScoped<IEventService, EventService>();
@@ -147,6 +148,11 @@ namespace TaskManagment.Mvc.Extensions
         private static IServiceCollection AddExpressiveAnnotationsConfig(this IServiceCollection services)
         {
             services.AddExpressiveAnnotations();
+            return services;
+        }
+        private static IServiceCollection AddSignalRConfig(this IServiceCollection services)
+        {
+            services.AddSignalR();
             return services;
         }
         private static IServiceCollection AddMigrationsEndPointConfig(this IServiceCollection services)

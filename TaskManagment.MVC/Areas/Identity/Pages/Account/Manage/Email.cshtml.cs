@@ -70,7 +70,7 @@ namespace TaskManagment.Mvc.Areas.Identity.Pages.Account.Manage
             public string NewEmail { get; set; }
         }
 
-        private async Task LoadAsync(ApplicationUser user)
+        private async System.Threading.Tasks.Task LoadAsync(ApplicationUser user)
         {
             var email = await _userManager.GetEmailAsync(user);
             Email = email;

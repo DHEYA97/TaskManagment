@@ -14,7 +14,7 @@ namespace TaskManagment.Repository.Data
         IdentityDbContext<ApplicationUser, IdentityRole, string>(options)
     {
         private readonly IServiceProvider _serviceProvider = serviceProvider;
-        public DbSet<Image> Images { get; set; }
+        public DbSet<EventFile> EventFiles { get; set; }
         public DbSet<Event> Events { get; set; }
         
         protected override void OnModelCreating(ModelBuilder modelBuilder)

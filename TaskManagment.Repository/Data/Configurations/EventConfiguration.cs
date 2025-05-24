@@ -8,10 +8,10 @@ namespace TaskManagment.Repository.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Event> builder)
         {
-            builder.HasMany(e => e.Images)
-                .WithOne(etm => etm.Event)
-                .HasForeignKey(etm => etm.EventId)
-                .OnDelete(DeleteBehavior.Restrict);
+            builder.HasMany(e => e.EventFiles)
+                   .WithOne(etm => etm.Event)
+                   .HasForeignKey(etm => etm.EventId)
+                   .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

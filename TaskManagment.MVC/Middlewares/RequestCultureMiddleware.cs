@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Localization;
 using System.Globalization;
-
 namespace TaskManagment.Mvc.Middlewares
 {
     public class RequestCultureMiddleware
@@ -12,7 +11,7 @@ namespace TaskManagment.Mvc.Middlewares
             _next = next;
         }
 
-        public async Task InvokeAsync(HttpContext context)
+        public async System.Threading.Tasks.Task InvokeAsync(HttpContext context)
         {
             var currentLanguage = context.Request.Cookies[CookieRequestCultureProvider.DefaultCookieName];
             var browserLanguage = context.Request.Headers["Accept-Language"].ToString()[..2];

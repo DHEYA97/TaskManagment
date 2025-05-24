@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using TaskManagment.Core.Interfaces;
 using TaskManagment.Core.Service;
 using TaskManagment.Core.Specification.EntitySpecification;
 using TaskManagment.Core.ViewModel;
@@ -7,9 +8,11 @@ namespace TaskManagment.Core.Validations
     public class EventValidator : AbstractValidator<EventFormViewModel>
     {
         private readonly IEventService _eventService;
-        public EventValidator(IEventService eventService)
+        private readonly IDateTimeService _dateTimeService;
+        public EventValidator(IEventService eventService , IDateTimeService dateTimeService)
         {
             _eventService = eventService;
+            _dateTimeService = dateTimeService;
             RuleFor(l => l.Name)
                 .NotNull()
                 .NotEmpty()
@@ -19,32 +22,16 @@ namespace TaskManagment.Core.Validations
                 .MaximumLength(100)
                 .WithMessage("{PropertyName} لا يجب أن يتجاوز {MaxLength} حرفًا.");
 
-            RuleFor(l => l.EventDate)
-            .GreaterThan(DateTime.Today.AddDays(-1))
-            .WithMessage("تاريخ الحدث يجب أن يكون اكبر من تاريخ اليوم.")
-            .When(x => x.Id < 1);
+            RuleFor(l => l.StartDate)
+                .Must((model, StartDate) => StartDate > _dateTimeService.GetNowKsa().AddMinutes(-1))
+                .WithMessage(model => $"{_dateTimeService.GetNowKsa().AddMinutes(-1)} وقت بداية المهمة يجب أن يكون أكبر من.");
 
-            RuleFor(l => l.EventBeginRegisterDate)
-                .GreaterThan(DateTime.Today.AddDays(-1))
-                .WithMessage("تاريخ بداية التسجيل يجب أن يكون اكبر من تاريخ اليوم.")
-                .When(x => x.Id < 1)
-                .LessThanOrEqualTo(l => l.EventDate)
-                .WithMessage("تاريخ بداية التسجيل يجب أن يكون أقل من تاريخ الحدث.")
-                .When(x => x.EventDate != default);
-
-            RuleFor(l => l.EventEndDate)
-                .GreaterThan(DateTime.Today.AddDays(-1))
-                .WithMessage("تاريخ نهاية الحدث  يجب أن يكون اكبر من تاريخ اليوم.")
-                .When(x => x.EventDate != default)
-                .GreaterThanOrEqualTo(l => l.EventDate)
-                .WithMessage("تاريخ نهاية الحدث يجب أن يكون اكبر من تاريخ بداية الحدث.")
-                .When(x => x.EventDate != default);
-
-            RuleFor(l => l.SelectTemplatesId)
-            .NotEmpty()
-            .WithMessage("يجب اختيار قوالب.")
-            .Must(ids => ids.Distinct().Count() == ids.Count())
-            .WithMessage("لا يمكن أن تحتوي القوالب المختارة على قيم مكررة.");
+            RuleFor(l => l.EndDate)
+                .Must((model, endDate) => endDate > _dateTimeService.GetNowKsa().AddMinutes(-1))
+                .WithMessage(model => $"{_dateTimeService.GetNowKsa().AddMinutes(-1)} وقت نهاية المهمة يجب أن يكون أكبر من.")
+                .Must((model, endDate) => endDate > model.StartDate)
+                .WithMessage(model => $"{model.StartDate} وقت نهاية المهمة يجب أن يكون أكبر من.")
+                .When(x => x.StartDate != default);
 
         }
     }

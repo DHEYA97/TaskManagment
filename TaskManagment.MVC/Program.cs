@@ -1,11 +1,12 @@
 using Hangfire;
 using HangfireBasicAuthenticationFilter;
-using TaskManagment.Mvc.Extensions;
-using TaskManagment.Mvc.Middlewares;
-using TaskManagment.Repository.Data;
 using Serilog;
 using Serilog.Context;
 using System.Security.Claims;
+using TaskManagment.Mvc.Extensions;
+using TaskManagment.Mvc.Middlewares;
+using TaskManagment.Mvc.Task;
+using TaskManagment.Repository.Data;
 namespace TaskManagment
 {
     public class Program
@@ -24,6 +25,16 @@ namespace TaskManagment
             builder.Services.AddDependency(builder.Configuration,cultures);
 
             builder.Services.AddControllersWithViews();
+
+            builder.Services.AddCors(options => {
+                options.AddPolicy("AllowSignalR", policy => {
+                    policy.AllowAnyHeader()
+                          .AllowAnyMethod()
+                          .SetIsOriginAllowed(_ => true)
+                          .AllowCredentials();
+                });
+            });
+
 
             //Add Serilog
             Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(builder.Configuration).CreateLogger();
@@ -73,8 +84,8 @@ namespace TaskManagment
             //    Secure = CookieSecurePolicy.Always
             //});
 
-            
 
+            app.UseCors("AllowSignalR");
 
             app.UseRouting();
 
@@ -146,6 +157,8 @@ namespace TaskManagment
                 await next();
             });
             app.UseSerilogRequestLogging();
+
+            app.MapHub<TaskHub>("/taskHub");
 
             app.MapControllerRoute(
                 name: "default",

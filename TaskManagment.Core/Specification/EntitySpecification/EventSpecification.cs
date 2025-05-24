@@ -7,11 +7,11 @@ namespace TaskManagment.Core.Specification.EntitySpecification
     {
         public EventSpecification()
         {
-            Includes.Add(e => e.Images);
+            Includes.Add(e => e.EventFiles);
         }
         public EventSpecification(int id) : base(x => x.Id == id)
         {
-            Includes.Add(e => e.Images);
+            Includes.Add(e => e.EventFiles);
         }
     }
 }

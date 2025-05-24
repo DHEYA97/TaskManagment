@@ -12,11 +12,11 @@ namespace TaskManagment.Mvc.Areas.Identity.Pages.Account.Manage
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly IImageService _imageService;
+        private readonly IFileService _imageService;
         public IndexModel(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
-            IImageService imageService)
+            IFileService imageService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -67,7 +67,7 @@ namespace TaskManagment.Mvc.Areas.Identity.Pages.Account.Manage
             public bool IsRemoveAvatar { get; set; }
         }
 
-        private async Task LoadAsync(ApplicationUser user)
+        private async System.Threading.Tasks.Task LoadAsync(ApplicationUser user)
         {
             var userName = await _userManager.GetUserNameAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);

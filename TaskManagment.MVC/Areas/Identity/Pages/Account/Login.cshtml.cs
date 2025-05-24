@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Localization;
 using System.ComponentModel.DataAnnotations;
-
+using System.Threading.Tasks;
 namespace TaskManagment.Mvc.Areas.Identity.Pages.Account
 {
     public class LoginModel : PageModel
@@ -87,7 +87,7 @@ namespace TaskManagment.Mvc.Areas.Identity.Pages.Account
             //public bool RememberMe { get; set; }
         }
 
-        public async Task OnGetAsync(string returnUrl = null)
+        public async System.Threading.Tasks.Task OnGetAsync(string returnUrl = null)
         {
             if (!string.IsNullOrEmpty(ErrorMessage))
             {

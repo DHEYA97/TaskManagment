@@ -12,8 +12,8 @@ using TaskManagment.Repository.Data;
 namespace TaskManagment.Repository.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250521112602_initialData")]
-    partial class initialData
+    [Migration("20250522110400_initialDB")]
+    partial class initialDB
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -173,14 +173,12 @@ namespace TaskManagment.Repository.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Location")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
@@ -203,6 +201,38 @@ namespace TaskManagment.Repository.Data.Migrations
                     b.HasIndex("UpdatedById");
 
                     b.ToTable("Events");
+                });
+
+            modelBuilder.Entity("TaskManagment.Core.Entities.EventFile", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("EventId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EventId");
+
+                    b.ToTable("EventFiles");
                 });
 
             modelBuilder.Entity("TaskManagment.Core.Entities.Identity.ApplicationUser", b =>
@@ -290,34 +320,6 @@ namespace TaskManagment.Repository.Data.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("TaskManagment.Core.Entities.Image", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("EventId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("UpdatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Url")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EventId");
-
-                    b.ToTable("Images");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -384,10 +386,10 @@ namespace TaskManagment.Repository.Data.Migrations
                     b.Navigation("UpdatedBy");
                 });
 
-            modelBuilder.Entity("TaskManagment.Core.Entities.Image", b =>
+            modelBuilder.Entity("TaskManagment.Core.Entities.EventFile", b =>
                 {
                     b.HasOne("TaskManagment.Core.Entities.Event", "Event")
-                        .WithMany("Images")
+                        .WithMany("EventFiles")
                         .HasForeignKey("EventId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -397,7 +399,7 @@ namespace TaskManagment.Repository.Data.Migrations
 
             modelBuilder.Entity("TaskManagment.Core.Entities.Event", b =>
                 {
-                    b.Navigation("Images");
+                    b.Navigation("EventFiles");
                 });
 #pragma warning restore 612, 618
         }

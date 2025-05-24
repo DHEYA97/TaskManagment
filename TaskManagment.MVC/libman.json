@@ -19,6 +19,13 @@
         "locales/ar.min.js",
         "locales/ar-SA.min.js"
       ]
+    },
+    {
+      "library": "microsoft-signalr@8.0.7",
+      "destination": "wwwroot/assets/Plugins/microsoft-signalr/",
+      "files": [
+        "signalr.min.js"
+      ]
     }
   ]
 }

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace TaskManagment.Repository.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class initialData : Migration
+    public partial class initialDB : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -169,10 +169,10 @@ namespace TaskManagment.Repository.Data.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Location = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Location = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     UpdatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -194,21 +194,22 @@ namespace TaskManagment.Repository.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Images",
+                name: "EventFiles",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Url = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FilePath = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ContentType = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     EventId = table.Column<int>(type: "int", nullable: false),
                     CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Images", x => x.Id);
+                    table.PrimaryKey("PK_EventFiles", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Images_Events_EventId",
+                        name: "FK_EventFiles_Events_EventId",
                         column: x => x.EventId,
                         principalTable: "Events",
                         principalColumn: "Id",
@@ -255,6 +256,11 @@ namespace TaskManagment.Repository.Data.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_EventFiles_EventId",
+                table: "EventFiles",
+                column: "EventId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Events_CreatedById",
                 table: "Events",
                 column: "CreatedById");
@@ -263,11 +269,6 @@ namespace TaskManagment.Repository.Data.Migrations
                 name: "IX_Events_UpdatedById",
                 table: "Events",
                 column: "UpdatedById");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Images_EventId",
-                table: "Images",
-                column: "EventId");
         }
 
         /// <inheritdoc />
@@ -289,7 +290,7 @@ namespace TaskManagment.Repository.Data.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Images");
+                name: "EventFiles");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

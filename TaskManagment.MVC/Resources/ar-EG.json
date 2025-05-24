@@ -65,5 +65,29 @@
   "onlyEnglishLettersAreAllowedError": "فقط يسمح باستخدام الحروف اللاتينية",
   "onlyArabicLettersAreAllowedError": "فقط يسمح باستخدام الحروف العربية",
   "maxLengthError": "لا يمكن أن يحتوي هذا الحقل على أكثر من {MaxLength} حرف",
-  "category": "التصنيف"
+  "category": "التصنيف",
+  "calendar": "جدول المهام",
+  "addEvent": "اضافة مهمه",
+  "sun": "الأحد",
+  "mon": "الاثنين",
+  "tue": "الثلاثاء",
+  "wed": "الاربعاء",
+  "thu": "الخميس",
+  "fri": "الجمعة",
+  "sat": "السبت",
+  "today": "اليوم",
+  "previousMonth": "الشهر السابق",
+  "nextMonth": "الشهر التالي",
+  "thisMonth": "الشهر الحالي",
+  "month": "شهر",
+  "week": "أسبوع",
+  "day": "يوم",
+  "list": "قائمة",
+  "monthView": "عرض الشهري",
+  "weekView": "عرض الأسبوعي",
+  "dayView": "عرض اليومي",
+  "listView": "عرض قائمة",
+  "addNewEvent": "اضافة مهمه جديده"
+
+
 }

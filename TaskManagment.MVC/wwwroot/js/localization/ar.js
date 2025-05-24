@@ -8,7 +8,32 @@
     "goodJob": "عمل جيد",
     "Oops": "تحذير",
     "ok": "تم",
-    "cancel": "إلغاء"
+    "cancel": "إلغاء",
+    "AddnewEvent": "اضافة مهمه جديده",
+    "newEventAdded": "تم اضافة المهمه بنجاح",
+    "eventUpdateed": "تم تحديث المهمه بنجاح",
+    "errorAdd": "عذراً، يبدو أنه تم اكتشاف بعض الأخطاء، يرجى المحاولة مرة أخرى",
+    "editEvent": "تعديل المهمه",
+    "eventNameRequired": "يجب ادخال اسم المهمه",
+    "startDateRequired": "يجب ادخال تاريخ بداية المهمه",
+    "endDateRequired": "يجب ادخال تاريخ انتهاء المهمه",
+    "deleteEvent": "هل انت متأكد من حذف المهة ؟",
+    "confirmDeleteEventText": "نعم قم بالحذف",
+    "eventNotDelet": "لم يتم حذف المهمه",
+    "eventDeletedSuccessfully": " يتم حذف المهمه بنجاح",
+    "eventCancel": "هل أنت متأكد أنك تريد الإلغاء ؟",
+    "noRetuern": "لا, تراجع",
+    "eventNoCancel": "لن يتم الإلغاء",
+    "eventNameRequired": "يجب كتابة الاسم",
+    "eventNameLength": "يجب أن يكون الاسم بين 1 و 100 حرف",
+    "startDateRequired": "يجب كتابة تاريخ البداية",
+    "startDateInvalid": "تاريخ بداية المهم يجب أن يكون أكبر من الوقت الحالي",
+    "endDateRequired": "يجب كتابة تاريخ النهاية",
+    "endDateInvalid": "تاريخ نهاية المهمه يجب أن يكون أكبر من الآن وأكبر من تاريخ البداية",
+    "locale": "ar",
+    "direction": "rtl",
+
+
 };
 
 var daterangePickerLocale = {

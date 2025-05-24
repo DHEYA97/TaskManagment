@@ -65,5 +65,25 @@
   "onlyEnglishLettersAreAllowedError": "Only English letters are allowed.",
   "onlyArabicLettersAreAllowedError": "Only Arabic letters are allowed.",
   "maxLengthError": "Value cannot be more than {MaxLength} characters",
-  "category": "Category"
+  "category": "Category",
+  "calendar": "Calendar",
+  "addEvent": "Add Event",
+  "sun": "Sunday",
+  "mon": "Monday",
+  "tue": "Tuesday",
+  "wed": "Wednesday",
+  "thu": "Thursday",
+  "fri": "Friday",
+  "sat": "Saturday",
+  "today": "Today",
+  "previousMonth": "Previous Month",
+  "nextMonth": "Next Month",
+  "thisMonth": "This Month",
+  "month": "Month",
+  "week": "Week",
+  "day": "Day",
+  "monthView": "Month View",
+  "weekView": "Week View",
+  "dayView": "Day View"
+
 }

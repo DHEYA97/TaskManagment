@@ -9,7 +9,7 @@ using SixLabors.ImageSharp.Processing;
 
 namespace TaskManagment.ServiceAndFactore.Service
 {
-    public class ImageService(IWebHostEnvironment webHostEnvironment, IUnitOfWork unitOfWork) : IImageService
+    public class FileService(IWebHostEnvironment webHostEnvironment, IUnitOfWork unitOfWork) : IFileService
     {
         private readonly IWebHostEnvironment _webHostEnvironment = webHostEnvironment;
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
