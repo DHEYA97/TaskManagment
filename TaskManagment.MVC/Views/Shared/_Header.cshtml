@@ -33,7 +33,7 @@
 			</div>
 			<!--end::Aside  toggle-->
 			<!--begin::Logo-->
-			<a asp-controller="Home" asp-action="Index">
+			<a asp-controller="Home" asp-action="Index" class="p-2 bg-white">
 				<img alt="Logo" src="~/assets/images/logo.png" class="h-40px h-lg-50px" />
 			</a>
 			<!--end::Logo-->
@@ -143,7 +143,7 @@
 				<div class="btn btn-flex align-items-center bg-hover-white bg-hover-opacity-10 py-2 px-2 px-md-3" data-kt-menu-trigger="click" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end">
 					<!--begin::Name-->
 					<div class="d-none d-md-flex flex-column align-items-end justify-content-center me-2 me-md-4">
-						<span class="text-muted fs-8 fw-semibold lh-1 mb-1">Welcom</span>
+						<span class="text-muted fs-8 fw-semibold lh-1 mb-1">@localizer["welcom"]</span>
 						<span class="text-white fs-8 fw-bold lh-1">@User.FindFirst(ClaimTypes.GivenName)!.Value</span>
 					</div>
 					<!--end::Name-->

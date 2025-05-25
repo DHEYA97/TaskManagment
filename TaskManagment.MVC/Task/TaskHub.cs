@@ -15,9 +15,25 @@ namespace TaskManagment.Mvc.Task
 
             await base.OnConnectedAsync();
         }
+        private async System.Threading.Tasks.Task SendTaskToManagersInternal(string method, object task)
+        {
+            await Clients.Group(DefaultRoles.Manager).SendAsync(method, task);
+        }
+
         public async System.Threading.Tasks.Task SendTaskToManagers(object task)
         {
-            await Clients.Group(DefaultRoles.Manager).SendAsync("addtask", task);
+            await SendTaskToManagersInternal("addtask", task);
         }
+
+        public async System.Threading.Tasks.Task EditTaskToManagers(object task)
+        {
+            await SendTaskToManagersInternal("edittask", task);
+        }
+
+        public async System.Threading.Tasks.Task DeleteTaskToManagers(object task)
+        {
+            await SendTaskToManagersInternal("deletetask", task);
+        }
+
     }
 }

@@ -49,7 +49,7 @@ namespace TaskManagment.Mvc.Controllers
             {
                 model.CreatedById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
                 var Event = await _eventService.AddEventAsync(model, new EventSpecification(model.Id));
-                return Json(new { success = true });
+                return Json(new { success = true ,result = Event.Id});
             }
             catch (Exception ex)
             {

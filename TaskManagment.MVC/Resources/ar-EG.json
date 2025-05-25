@@ -87,7 +87,21 @@
   "weekView": "عرض الأسبوعي",
   "dayView": "عرض اليومي",
   "listView": "عرض قائمة",
-  "addNewEvent": "اضافة مهمه جديده"
+  "addNewEvent": "اضافة مهمه جديده",
+  "eventName": "اسم المهمه",
+  "eventDescription": "وصف المهمه",
+  "eventLocation": "مكان المهمه",
+  "allDay": "طوال اليوم",
+  "eventStartDate": "تاريخ بداية المهمه",
+  "eventStartTime": "وقت بداية المهمه",
+  "eventEndDate": "تاريخ نهاية المهمه",
+  "eventEndTime": "وقت نهاية المهمه",
+  "cancel": "إلغاء",
+  "submit": "حفظ",
+  "event": "المهام",
+  "welcom" :  "مرحباً"
+
+
 
 
 }

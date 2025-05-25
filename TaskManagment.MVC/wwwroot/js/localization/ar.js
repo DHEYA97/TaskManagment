@@ -32,6 +32,16 @@
     "endDateInvalid": "تاريخ نهاية المهمه يجب أن يكون أكبر من الآن وأكبر من تاريخ البداية",
     "locale": "ar",
     "direction": "rtl",
+    "eventDeletedSuccessfully": "تم حذف المهمة بنجاح",
+    "taskAdded": "تم إضافة مهمة جديدة",
+    "taskEdited": "تم التعديل على المهمة",
+    "reminder": "تذكير",
+    "taskStarted": "بدأت المهمة",
+    "taskStartsIn": "المهمة",
+    "oneMinute": "ستبدأ بعد دقيقة واحدة",
+    "twoMinutes": "ستبدأ بعد دقيقتين",
+    "after": "ستبدأ بعد",
+    "minutes": "دقائق",
 
 
 };

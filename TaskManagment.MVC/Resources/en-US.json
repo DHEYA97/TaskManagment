@@ -84,6 +84,20 @@
   "day": "Day",
   "monthView": "Month View",
   "weekView": "Week View",
-  "dayView": "Day View"
+  "dayView": "Day View",
+  "listView": "List view",
+  "addNewEvent": "Add new task",
+  "eventName": "Task name",
+  "eventDescription": "Task description",
+  "eventLocation": "Task location",
+  "allDay": "All day",
+  "eventStartDate": "Task start date",
+  "eventStartTime": "Task start time",
+  "eventEndDate": "Task end date",
+  "eventEndTime": "Task end time",
+  "cancel": "Cancel",
+  "submit": "Save",
+  "event": "Tasks",
+  "welcom": "Welcom"
 
 }

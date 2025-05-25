@@ -38,47 +38,194 @@ var KTAppCalendar = (function () {
             endDate: "",
             allDay: !1,
         };
+
         var connection = new signalR.HubConnectionBuilder()
-                                    .withUrl("/taskHub", 
-                                        {
-                                            accessTokenFactory: () => {
-                                                return localStorage.getItem('accessToken') || '';
-                                            }
+                                    .withUrl("/taskHub", {
+                                        accessTokenFactory: () => {
+                                            return localStorage.getItem('accessToken') || '';
                                         }
-                                    )
+                                    })
                                     .configureLogging(signalR.LogLevel.Debug)
                                     .build();
 
-        console.log("Is Manager:", window.isManager, typeof window.isManager);
-
-        if (window.isManager == true) {
-            console.log("yes yes yes");
-            connection.on("addtask", function (task) {
-                console.log("Connection addtask successfully.");
-                console.log("Received task:", task);
-                e.addEvent({
-                    id: task.id,
-                    title: task.title,
-                    description: task.description,
-                    location: task.location,
-                    start: task.start,
-                    end: task.end,
-                    allDay: task.allDay,
+        function sendSignalR(methodName, data) {
+            connection.invoke(methodName, data)
+                .catch(function (err) {
+                    console.error(`SignalR Error in ${methodName}:`, err.toString());
                 });
-                e.render();
-                f.reset();
-            });
         }
 
-        connection.start()
-            .then(function () {
-                console.log("Connection started successfully.");
-                console.log(window.isManager);
-            })
-            .catch(function (err) {
-                console.error("Error while starting connection: ", err);
+        function handleTaskEvent(type, task) {
+            console.log(`Connection ${type} successfully.`);
+            console.log("Received task:", task);
+
+            const existingEvent = e.getEventById(task.id || task);
+
+            if (type === "addtask") {
+                e.addEvent(task);
+                showReminder(localization.newEventAdded); 
+            } else if (type === "edittask") {
+                if (existingEvent) existingEvent.remove();
+                e.addEvent(task);
+                showReminder(localization.eventUpdateed);
+            } else if (type === "deletetask") {
+                if (existingEvent) existingEvent.remove();
+                showReminder(localization.eventDeletedSuccessfully); 
+            }
+
+            e.render();
+            f.reset();
+        }
+
+    connection.start()
+    .then(function () {
+        console.log("Connection started successfully.");
+
+        if (window.isManager === true) {
+            console.log("yes yes yes");
+            ["addtask", "edittask", "deletetask"].forEach(type => {
+                connection.on(type, task => handleTaskEvent(type, task));
             });
+        }
+    })
+    .catch(function (err) {
+        console.error("Error while starting connection: ", err);
+    });
+
+function scrollToCurrentTime(calendar) {
+    if (!calendar) return;
+    
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - 15);
+    
+    const timeStr = `${now.getHours()}:${now.getMinutes()}:00`;
+    
+    if (calendar.scrollToTime) {
+        calendar.scrollToTime({
+            hours: now.getHours(),
+            minutes: now.getMinutes(),
+            seconds: now.getSeconds()
+        });
+    } 
+    else {
+        calendar.setOption('scrollTime', timeStr);
+    }
+    
+    calendar.render();
+}
+
+const lastReminderTimes = {};
+
+function checkForUpcomingEvents(calendarInstance) {
+    const now = moment();
+    const events = calendarInstance.getEvents();
+    
+    events.forEach(event => {
+        const eventId = event.id;
+        const eventStart = moment(event.start);
+        const timeDiff = eventStart.diff(now, 'minutes', true); // وقت متبقي بالدقائق (بدقة عشرية)
+        
+        // أوقات التنبيه المطلوبة
+        const reminderTimes = [3, 2, 1];
+        
+        reminderTimes.forEach(reminderTime => {
+            const timeWindowStart = reminderTime;
+            const timeWindowEnd = reminderTime - 0.5; // نطاق 30 ثانية
             
+            if (timeDiff <= timeWindowStart && timeDiff > timeWindowEnd) {
+                if (!lastReminderTimes[eventId] || 
+                    !lastReminderTimes[eventId][reminderTime] || 
+                    now.diff(lastReminderTimes[eventId][reminderTime], 'minutes') >= 1) {
+                    
+                    console.log(`تذكير: "${event.title}" بعد ${reminderTime} دقائق`);
+                    showReminder(event.title, reminderTime);
+                    
+                    // تحديث وقت آخر تذكير
+                    if (!lastReminderTimes[eventId]) {
+                        lastReminderTimes[eventId] = {};
+                    }
+                    lastReminderTimes[eventId][reminderTime] = now.clone();
+                }
+            }
+        });
+        
+        // تذكير عند البدء (نطاق ±30 ثانية)
+        if (Math.abs(timeDiff) <= 0.5) {
+            if (!lastReminderTimes[eventId]?.started) {
+                console.log(`تذكير: "${event.title}" بدأت الآن`);
+                showReminder(event.title, "الآن");
+                lastReminderTimes[eventId] = lastReminderTimes[eventId] || {};
+                lastReminderTimes[eventId].started = true;
+            }
+        } else {
+            // إعادة تعيين التذكير عند تجاوز وقت الحدث
+            if (lastReminderTimes[eventId]?.started) {
+                delete lastReminderTimes[eventId].started;
+            }
+        }
+    });
+}
+
+function showReminder(title, timeLeft) {
+    let timeText;
+    
+    if (timeLeft !== null && timeLeft !== undefined && timeLeft !== "") {
+        if (timeLeft === "الآن") {
+            timeText = `${localization.taskStarted}: "${title}"`;
+        } else {
+            switch(timeLeft) {
+                case 1:
+                    timeText = `${localization.taskStartsIn} "${title}" ${localization.oneMinute}`;
+                    break;
+                case 2:
+                    timeText = `${localization.taskStartsIn} "${title}" ${localization.twoMinutes}`;
+                    break;
+                default:
+                    timeText = `${localization.taskStartsIn} "${title}" ${localization.after} ${timeLeft} ${localization.minutes}`;
+            }
+        }
+    } else {
+        timeText = title;
+    }
+    
+    playNotificationSound();
+    Swal.fire({
+        title: `<div style="font-size:1.5rem">${localization.reminder}</div>`,
+        text: timeText,
+        html: `
+            <div style="text-align:center; font-size:1.2rem">
+                <img src="/images/notification-icon.png.jpg" style="width:250px; margin-bottom:15px">
+                <div>${timeText}</div>
+            </div>
+        `,
+        width: '600px',
+        padding: '2rem',
+        // timer: 7000,
+        timerProgressBar: true,
+        showConfirmButton: true,
+        background: '#f8f9fa',
+        backdrop: `
+            rgba(0,0,0,0.4)
+            url("/images/nyan-cat.gif")
+            center top
+            no-repeat
+        `,
+        confirmButtonText: localization.ok,
+        customClass: {
+            container: 'custom-swal-container',
+            popup: 'custom-swal-popup',
+            title: 'custom-swal-title'
+        }
+    });
+}
+
+function playNotificationSound() {
+    const audio = new Audio();
+    audio.src = '/sounds/notification.wav';
+    audio.volume = 0.5;
+    audio.play().catch(e => console.error("تعذر تشغيل الصوت:", e));
+}
+
     const M = () => {
         (v.innerText = localization.AddnewEvent), u.show();
         const o = f.querySelectorAll('[data-kt-calendar="datepicker"]'),
@@ -110,35 +257,45 @@ var KTAppCalendar = (function () {
                                                 0 === c.selectedDates.length && (o = !0);
                                             var d = moment(r.selectedDates[0]).format(),
                                                 s = moment(
-                                                    l.selectedDates[l.selectedDates.length - 1]
+                                                l.selectedDates[l.selectedDates.length - 1]
                                                 ).format();
                                             if (!o) {
                                                 const e = moment(r.selectedDates[0]).format(
                                                     "YYYY-MM-DD"
                                                 ),
-                                                    t = e;
+                                                t = e;
                                                 (d =
-                                                    e +
+                                                e +
+                                                "T" +
+                                                moment(c.selectedDates[0]).format(
+                                                    "HH:mm:ss"
+                                                )),
+                                                (s =
+                                                    t +
                                                     "T" +
-                                                    moment(c.selectedDates[0]).format(
-                                                        "HH:mm:ss"
-                                                    )),
-                                                    (s =
-                                                        t +
-                                                        "T" +
-                                                        moment(m.selectedDates[0]).format(
-                                                            "HH:mm:ss"
-                                                        ));
+                                                    moment(m.selectedDates[0]).format(
+                                                    "HH:mm:ss"
+                                                    ));
                                             }
                                             const token = $('input[name="__RequestVerificationToken"]').val();
+                                            const newEvent = {
+                                                                id: A(),
+                                                                title: t.value,
+                                                                description: n.value,
+                                                                location: a.value,
+                                                                start: d,
+                                                                end: s,
+                                                                allDay: o,
+                                                            };
                                             const formData = new FormData();
-                                            formData.append("Name", t.value);
-                                            formData.append("Description", n.value);
-                                            formData.append("Location", a.value);
-                                            formData.append("StartDate", d);
-                                            formData.append("EndDate", s);
+                                            formData.append("Name", newEvent.title);
+                                            formData.append("Description", newEvent.description);
+                                            formData.append("Location", newEvent.location);
+                                            formData.append("StartDate", newEvent.start);
+                                            formData.append("EndDate", newEvent.end);
                                             formData.append("__RequestVerificationToken", token);
-                                            console.log(formData);
+                                            console.log("------------Begin Add ------------");
+                                            console.log("formData",formData);
                                             $.ajax({
                                                 url: '/Event/Create',
                                                 type: 'POST',
@@ -153,25 +310,15 @@ var KTAppCalendar = (function () {
                                                         buttonsStyling: !1,
                                                         confirmButtonText: localization.yes,
                                                         customClass: { confirmButton: "btn btn-primary" },
-                                                        }).then(function (o) {
-                                                            if (o.isConfirmed) {
-                                                                const newEvent = {
-                                                                        id: A(),
-                                                                        title: t.value,
-                                                                        description: n.value,
-                                                                        location: a.value,
-                                                                        start: d,
-                                                                        end: s,
-                                                                        allDay: o,
-                                                                    };
-                                                                    e.addEvent(newEvent);
-                                                                    e.render();
-                                                                    f.reset();
-                                                                    connection.invoke("SendTaskToManagers", newEvent)
-                                                                        .catch(function (err) {
-                                                                            console.error("SignalR Error:", err.toString());
-                                                                        });
-                                                                    // location.reload();
+                                                        }).then(function (i) {
+                                                            if (i.isConfirmed) {
+                                                                newEvent.id = result.result ?? newEvent.id;
+                                                                console.log("newEvent",newEvent);
+                                                                e.addEvent(newEvent);
+                                                                e.render();
+                                                                f.reset();
+                                                                sendSignalR("SendTaskToManagers", newEvent);
+                                                                console.log("------------End Add ------------");
                                                                 }});
                                                     } else {
                                                         Swal.fire({
@@ -250,7 +397,6 @@ var KTAppCalendar = (function () {
                                             ? (D.setAttribute("data-kt-indicator", "on"),
                                                 (D.disabled = !0),
                                                 setTimeout(function () {
-                                                    // إعداد بيانات الإرسال
                                                     let isAllDay = i.checked || c.selectedDates.length === 0;
                                                     let d = moment(r.selectedDates[0]).format(),
                                                         s = moment(
@@ -273,7 +419,8 @@ var KTAppCalendar = (function () {
                                                         EndDate: s,
                                                         __RequestVerificationToken: document.querySelector('input[name="__RequestVerificationToken"]')?.value
                                                     };
-
+                                                    console.log("------------Begin Edit ------------");
+                                                    console.log("eventData",eventData);
                                                     $.ajax({
                                                         url: "/Event/Edit",
                                                         type: "POST",
@@ -302,8 +449,9 @@ var KTAppCalendar = (function () {
                                                             }).then(function (o) {
                                                                 if (o.isConfirmed) {
                                                                     u.hide(),
-                                                                        (D.disabled = !1),
-                                                                        e.getEventById(E.id).remove();
+                                                                    (D.disabled = !1),
+                                                                    e.getEventById(E.id).remove();
+                                                                    D.removeAttribute("data-kt-indicator");
                                                                     let o = !1;
                                                                     i.checked && (o = !0),
                                                                         0 === c.selectedDates.length && (o = !0);
@@ -331,18 +479,22 @@ var KTAppCalendar = (function () {
                                                                                     "HH:mm:ss"
                                                                                 ));
                                                                     }
-                                                                    e.addEvent({
-                                                                        id: A(),
-                                                                        title: t.value,
-                                                                        description: n.value,
-                                                                        location: a.value,
-                                                                        start: d,
-                                                                        end: s,
+
+                                                                    const newEvent = {
+                                                                        id: eventData.Id,
+                                                                        title: eventData.Name,
+                                                                        description: eventData.Description,
+                                                                        location: eventData.Location,
+                                                                        start: eventData.StartDate,
+                                                                        end: eventData.EndDate,
                                                                         allDay: o,
-                                                                    }),
-                                                                        e.render(),
-                                                                        f.reset();
-                                                                        location.reload();
+                                                                    };
+                                                                    console.log(newEvent,"newEvent")
+                                                                    e.addEvent(newEvent),
+                                                                    e.render(),
+                                                                    f.reset();
+                                                                    sendSignalR("EditTaskToManagers", newEvent);
+                                                                    console.log("------------End Edit ------------");
                                                                 }
                                                             });
                                                         },
@@ -452,11 +604,10 @@ var KTAppCalendar = (function () {
                     navLinks: !0,
                     selectable: !0,
                     selectMirror: !0,
-                    slotDuration: '00:30:00',          
-                    slotLabelInterval: '00:30:00',    
+                    slotDuration: '00:15:00',          
+                    slotLabelInterval: '00:15:00',    
                     slotMinTime: '00:00:00',           
                     slotMaxTime: '24:00:00',
-                    scrollTime: '08:00:00',           
                     select: function (e) {
                         N(e), M();
                     },
@@ -533,10 +684,10 @@ var KTAppCalendar = (function () {
                                         if (isAllDay) {
                                             const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
                                             const selectedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-                                            console.log("-----Start AllDay-----")
+                                            console.log("-----Begin Start AllDay-----")
                                             console.log(startDate.getTime());
                                             console.log(endDate.getTime());
-                                            console.log("-----Start AllDay------")
+                                            console.log("-----Last Start AllDay------")
                                             return selectedDate >= today;
                                         } else {
                                             const timeInput = document.getElementById('kt_calendar_datepicker_start_time');
@@ -544,10 +695,10 @@ var KTAppCalendar = (function () {
 
                                             const [hours, minutes] = timeInput.value.split(':').map(Number);
                                             date.setHours(hours, minutes, 0, 0);
-                                            console.log("-----Start------")
+                                            console.log("-----Begin Start------")
                                             console.log(startDate.getTime());
                                             console.log(endDate.getTime());
-                                            console.log("-----Start------")
+                                            console.log("-----Last Start------")
                                             
                                             return date.getTime() >= now.getTime();
                                         }
@@ -575,11 +726,11 @@ var KTAppCalendar = (function () {
                                             const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
                                             const selectedEnd = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
                                             const selectedStart = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
-                                            console.log("------End AllDay------")
+                                            console.log("------Begin End AllDay------")
                                             console.log(startDate.getTime());
                                             console.log(endDate.getTime());
                                             console.log(now.getTime());
-                                            console.log("------End AllDay------")
+                                            console.log("------Last End AllDay------")
                                             return selectedEnd >= today && selectedEnd >= selectedStart;
                                         } else {
                                             const startTimeInput = document.getElementById('kt_calendar_datepicker_start_time');
@@ -591,11 +742,11 @@ var KTAppCalendar = (function () {
 
                                             startDate.setHours(startHours, startMinutes, 0, 0);
                                             endDate.setHours(endHours, endMinutes, 0, 0);
-                                            console.log("------End------")
+                                            console.log("------Begin End------")
                                             console.log(startDate.getTime());
                                             console.log(endDate.getTime());
                                             console.log(now.getTime());
-                                            console.log("------End------")
+                                            console.log("------Last End------")
                                             return endDate.getTime() >= now.getTime() && endDate.getTime() > startDate.getTime();
                                         }
                                     }
@@ -661,6 +812,7 @@ var KTAppCalendar = (function () {
                                         if (result.success) {
                                             e.getEventById(E.id).remove();
                                             w.hide();
+                                            sendSignalR("DeleteTaskToManagers", { id: E.id });
                                             Swal.fire({
                                                 text: localization.eventDeletedSuccessfully,
                                                 icon: "success",
@@ -757,11 +909,17 @@ var KTAppCalendar = (function () {
                         p && p.resetForm(!0);
                     });
                 })(C);
+            
+                setInterval(function() {
+                    scrollToCurrentTime(e);
+                }, 600000);
+
+                setInterval(function() {
+                    checkForUpcomingEvents(e);
+                }, 30000);
         },
     };
 })();
 KTUtil.onDOMContentLoaded(function () {
     KTAppCalendar.init();
 });
-
-

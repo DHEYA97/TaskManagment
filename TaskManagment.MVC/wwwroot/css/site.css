@@ -53,3 +53,35 @@ body {
     height : 70px !important
 }
 /*End Custom Style*/
+.custom-swal-popup {
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+}
+
+.custom-swal-title {
+    color: #2c3e50;
+    font-weight: bold;
+}
+.swal2-container.swal2-center > .swal2-popup {
+    width: 700px !important;
+    max-width: 90% !important;
+    padding: 2rem !important;
+}
+
+.swal2-container .swal2-html-container {
+    max-height: 300px !important;
+    overflow-y: clip !important;
+    margin: 1rem 0 !important;
+    padding: 0 1.5rem !important;
+    font-size: 1.1rem !important;
+    line-height: 1.6 !important;
+}
+
+    .swal2-container .swal2-html-container::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .swal2-container .swal2-html-container::-webkit-scrollbar-thumb {
+        background: rgba(0,0,0,0.2);
+        border-radius: 4px;
+    }
