@@ -117,53 +117,56 @@ function scrollToCurrentTime(calendar) {
 const lastReminderTimes = {};
 
 function checkForUpcomingEvents(calendarInstance) {
-    const now = moment();
-    const events = calendarInstance.getEvents();
-    
-    events.forEach(event => {
-        const eventId = event.id;
-        const eventStart = moment(event.start);
-        const timeDiff = eventStart.diff(now, 'minutes', true); // وقت متبقي بالدقائق (بدقة عشرية)
+    if (window.isManager === true){
+     
+        const now = moment();
+        const events = calendarInstance.getEvents();
         
-        // أوقات التنبيه المطلوبة
-        const reminderTimes = [3, 2, 1];
-        
-        reminderTimes.forEach(reminderTime => {
-            const timeWindowStart = reminderTime;
-            const timeWindowEnd = reminderTime - 0.5; // نطاق 30 ثانية
+        events.forEach(event => {
+            const eventId = event.id;
+            const eventStart = moment(event.start);
+            const timeDiff = eventStart.diff(now, 'minutes', true); // وقت متبقي بالدقائق (بدقة عشرية)
             
-            if (timeDiff <= timeWindowStart && timeDiff > timeWindowEnd) {
-                if (!lastReminderTimes[eventId] || 
-                    !lastReminderTimes[eventId][reminderTime] || 
-                    now.diff(lastReminderTimes[eventId][reminderTime], 'minutes') >= 1) {
-                    
-                    console.log(`تذكير: "${event.title}" بعد ${reminderTime} دقائق`);
-                    showReminder(event.title, reminderTime);
-                    
-                    // تحديث وقت آخر تذكير
-                    if (!lastReminderTimes[eventId]) {
-                        lastReminderTimes[eventId] = {};
+            // أوقات التنبيه المطلوبة
+            const reminderTimes = [5, 3, 1];
+            
+            reminderTimes.forEach(reminderTime => {
+                const timeWindowStart = reminderTime;
+                const timeWindowEnd = reminderTime - 0.5; // نطاق 30 ثانية
+                
+                if (timeDiff <= timeWindowStart && timeDiff > timeWindowEnd) {
+                    if (!lastReminderTimes[eventId] || 
+                        !lastReminderTimes[eventId][reminderTime] || 
+                        now.diff(lastReminderTimes[eventId][reminderTime], 'minutes') >= 1) {
+                        
+                        console.log(`تذكير: "${event.title}" بعد ${reminderTime} دقائق`);
+                        showReminder(event.title, reminderTime);
+                        
+                        // تحديث وقت آخر تذكير
+                        if (!lastReminderTimes[eventId]) {
+                            lastReminderTimes[eventId] = {};
+                        }
+                        lastReminderTimes[eventId][reminderTime] = now.clone();
                     }
-                    lastReminderTimes[eventId][reminderTime] = now.clone();
+                }
+            });
+            
+            // تذكير عند البدء (نطاق ±30 ثانية)
+            if (Math.abs(timeDiff) <= 0.5) {
+                if (!lastReminderTimes[eventId]?.started) {
+                    console.log(`تذكير: "${event.title}" بدأت الآن`);
+                    showReminder(event.title, "الآن");
+                    lastReminderTimes[eventId] = lastReminderTimes[eventId] || {};
+                    lastReminderTimes[eventId].started = true;
+                }
+            } else {
+                // إعادة تعيين التذكير عند تجاوز وقت الحدث
+                if (lastReminderTimes[eventId]?.started) {
+                    delete lastReminderTimes[eventId].started;
                 }
             }
         });
-        
-        // تذكير عند البدء (نطاق ±30 ثانية)
-        if (Math.abs(timeDiff) <= 0.5) {
-            if (!lastReminderTimes[eventId]?.started) {
-                console.log(`تذكير: "${event.title}" بدأت الآن`);
-                showReminder(event.title, "الآن");
-                lastReminderTimes[eventId] = lastReminderTimes[eventId] || {};
-                lastReminderTimes[eventId].started = true;
-            }
-        } else {
-            // إعادة تعيين التذكير عند تجاوز وقت الحدث
-            if (lastReminderTimes[eventId]?.started) {
-                delete lastReminderTimes[eventId].started;
-            }
-        }
-    });
+    }
 }
 
 function showReminder(title, timeLeft) {
@@ -200,7 +203,7 @@ function showReminder(title, timeLeft) {
         `,
         width: '600px',
         padding: '2rem',
-        // timer: 7000,
+        timer: 7000,
         timerProgressBar: true,
         showConfirmButton: true,
         background: '#f8f9fa',
@@ -912,7 +915,7 @@ function playNotificationSound() {
             
                 setInterval(function() {
                     scrollToCurrentTime(e);
-                }, 600000);
+                }, 30000);
 
                 setInterval(function() {
                     checkForUpcomingEvents(e);

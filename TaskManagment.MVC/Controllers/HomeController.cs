@@ -19,26 +19,7 @@ namespace TaskManagment.Mvc.Controllers
         [Authorize]
         public async Task<IActionResult> Index()
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrEmpty(userId))
-            {
-                return RedirectToAction("Login", "Account");
-            }
-
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-            {
-                return RedirectToAction("Login", "Account");
-            }
-
-            var roles = await _userManager.GetRolesAsync(user);
-
-            if (roles.Count == 1 && roles.Contains(DefaultRoles.Manager))
-            {
-                return RedirectToAction("Index", "EventAttendee");
-            }
-
-            return RedirectToAction("List", "Event");
+            return RedirectToAction("Calendar", "Event");
         }
         [HttpPost]
         public IActionResult SetLanguage(string culture, string returnUrl)

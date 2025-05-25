@@ -19,15 +19,7 @@ namespace TaskManagment.Mvc.Controllers
 
         public IActionResult Index()
         {
-            return RedirectToAction(nameof(List));
-        }
-        public async Task<IActionResult> List()
-        {
-            var events = new List<EventViewModel>
-            {
-                new EventViewModel()
-            };
-            return View(events);
+            return RedirectToAction(nameof(Calendar));
         }
         public IActionResult Calendar()
         {
