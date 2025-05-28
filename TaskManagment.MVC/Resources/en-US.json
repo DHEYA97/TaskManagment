@@ -98,6 +98,9 @@
   "cancel": "Cancel",
   "submit": "Save",
   "event": "Tasks",
-  "welcom": "Welcom"
+  "welcom": "Welcom",
+  "start": "Start :",
+  "end": "End :",
+  "eventDetails": "Event Details"
 
 }

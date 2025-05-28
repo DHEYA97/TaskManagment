@@ -4,6 +4,15 @@
 @section Styles {
     <link rel="stylesheet" href="~/assets/plugins/calendar/fullcalendar.bundle.css" />
 }
+<style>
+    .fc .fc-timegrid-col.fc-day-today,.fc .fc-daygrid-day.fc-day-today {
+        background-color: rgb(225 225 225 / 15%) !important;
+    }
+
+    .fc-theme-standard td, .fc-theme-standard th{
+        border: 1.5px solid var(--fc-border-color, #ddd) !important;
+    }
+</style>
 <div class="d-flex flex-column flex-column-fluid">
     <!--begin::Content-->
     <div id="kt_app_content" class="app-content  flex-column-fluid ">
@@ -104,7 +113,7 @@
                                     <label class="fs-6 fw-semibold mb-2">@localizer["eventDescription"]</label>
                                     <!--end::Label-->
                                     <!--begin::Input-->
-                                    <input type="text" class="form-control form-control-solid" placeholder="" name="calendar_event_description">
+                                    <textarea class="form-control form-control-solid js-tinymce" placeholder="" id="calendar_event_description" name="calendar_event_description"></textarea>
                                     <!--end::Input-->
                                 </div>
                                 <!--end::Input group-->
@@ -213,114 +222,86 @@
                 <!--begin::Modal dialog-->
                 <div class="modal-dialog modal-dialog-centered mw-650px">
                     <!--begin::Modal content-->
-                    <div class="modal-content">
+                    <div class="modal-content shadow-lg rounded-4 border-0 overflow-hidden">
                         <!--begin::Modal header-->
-                        <div class="modal-header border-0 justify-content-end">
-                            <!--begin::Edit-->
-                            <div class="btn btn-icon btn-sm btn-color-gray-500 btn-active-icon-primary me-2" data-bs-toggle="tooltip" data-bs-dismiss="click" id="kt_modal_view_event_edit" aria-label="Edit Event" data-bs-original-title="Edit Event" data-kt-initialized="1">
-                                <span class="svg-icon svg-icon-primary svg-icon-2x">
-                                    <!--begin::Svg Icon | path:/var/www/preview.keenthemes.com/metronic/releases/2021-05-14-112058/theme/html/demo8/dist/../src/media/svg/icons/Design/Edit.svg-->
-                                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
-                                        <title>Stockholm-icons / Design / Edit</title>
-                                        <desc>Created with Sketch.</desc>
-                                        <defs />
-                                        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                                            <rect x="0" y="0" width="24" height="24" />
-                                            <path d="M8,17.9148182 L8,5.96685884 C8,5.56391781 8.16211443,5.17792052 8.44982609,4.89581508 L10.965708,2.42895648 C11.5426798,1.86322723 12.4640974,1.85620921 13.0496196,2.41308426 L15.5337377,4.77566479 C15.8314604,5.0588212 16,5.45170806 16,5.86258077 L16,17.9148182 C16,18.7432453 15.3284271,19.4148182 14.5,19.4148182 L9.5,19.4148182 C8.67157288,19.4148182 8,18.7432453 8,17.9148182 Z" fill="#000000" fill-rule="nonzero" transform="translate(12.000000, 10.707409) rotate(-135.000000) translate(-12.000000, -10.707409) " />
-                                            <rect fill="#000000" opacity="0.3" x="5" y="20" width="15" height="2" rx="1" />
-                                        </g>
-                                    </svg><!--end::Svg Icon-->
-                                </span>
+                        <div class="modal-header bg-light py-4 px-5 d-flex justify-content-between align-items-center">
+                            <h3 class="text-dark fw-bold mb-0 mx-auto">@localizer["eventDetails"]</h3>
+                            <div class="d-flex gap-2">
+                                <!-- Close Button -->
+                                <button class="btn btn-icon btn-light btn-active-light-secondary"
+                                        data-bs-dismiss="modal"
+                                        data-bs-toggle="tooltip"
+                                        title="Hide Event">
+                                    <i class="bi bi-x-lg fs-4"></i>
+                                </button>
+
+                                <!-- Edit Button -->
+                                <button id="kt_modal_view_event_edit"
+                                        class="btn btn-icon btn-light btn-active-light-primary"
+                                        data-bs-toggle="tooltip"
+                                        title="Edit Event">
+                                    <i class="bi bi-pencil-square fs-4 text-primary"></i>
+                                </button>
+                                
+                                <!-- Delete Button -->
+                                <button id="kt_modal_view_event_delete"
+                                        class="btn btn-icon btn-light btn-active-light-danger"
+                                        data-bs-toggle="tooltip"
+                                        title="Delete Event">
+                                    <i class="bi bi-trash-fill fs-4 text-danger"></i>
+                                </button>
                             </div>
-                            <!--end::Edit-->
-                            <!--begin::Edit-->
-                            <div class="btn btn-icon btn-sm btn-color-gray-500 btn-active-icon-danger me-2" data-bs-toggle="tooltip" data-bs-dismiss="click" id="kt_modal_view_event_delete" aria-label="Delete Event" data-bs-original-title="Delete Event" data-kt-initialized="1">
-                                <span class="svg-icon svg-icon-primary svg-icon-2x">
-                                    <!--begin::Svg Icon | path:/var/www/preview.keenthemes.com/metronic/releases/2021-05-14-112058/theme/html/demo8/dist/../src/media/svg/icons/Home/Trash.svg-->
-                                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
-                                        <title>Stockholm-icons / Home / Trash</title>
-                                        <desc>Created with Sketch.</desc>
-                                        <defs />
-                                        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                                            <rect x="0" y="0" width="24" height="24" />
-                                            <path d="M6,8 L18,8 L17.106535,19.6150447 C17.04642,20.3965405 16.3947578,21 15.6109533,21 L8.38904671,21 C7.60524225,21 6.95358004,20.3965405 6.89346498,19.6150447 L6,8 Z M8,10 L8.45438229,14.0894406 L15.5517885,14.0339036 L16,10 L8,10 Z" fill="#000000" fill-rule="nonzero" />
-                                            <path d="M14,4.5 L14,3.5 C14,3.22385763 13.7761424,3 13.5,3 L10.5,3 C10.2238576,3 10,3.22385763 10,3.5 L10,4.5 L5.5,4.5 C5.22385763,4.5 5,4.72385763 5,5 L5,5.5 C5,5.77614237 5.22385763,6 5.5,6 L18.5,6 C18.7761424,6 19,5.77614237 19,5.5 L19,5 C19,4.72385763 18.7761424,4.5 18.5,4.5 L14,4.5 Z" fill="#000000" opacity="0.3" />
-                                        </g>
-                                    </svg><!--end::Svg Icon-->
-                                </span>
-                            </div>
-                            <!--end::Edit-->
-                            <!--begin::Close-->
-                            <div class="btn btn-icon btn-sm btn-color-gray-500 btn-active-icon-primary" data-bs-dismiss="modal" data-bs-toggle="tooltip" aria-label="Hide Event" data-bs-original-title="Hide Event" data-kt-initialized="1">
-                                <span class="svg-icon svg-icon-primary svg-icon-2x">
-                                    <!--begin::Svg Icon | path:/var/www/preview.keenthemes.com/metronic/releases/2021-05-14-112058/theme/html/demo8/dist/../src/media/svg/icons/Navigation/Close.svg-->
-                                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
-                                        <title>Stockholm-icons / Navigation / Close</title>
-                                        <desc>Created with Sketch.</desc>
-                                        <defs />
-                                        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                                            <g transform="translate(12.000000, 12.000000) rotate(-45.000000) translate(-12.000000, -12.000000) translate(4.000000, 4.000000)" fill="#000000">
-                                                <rect x="0" y="7" width="16" height="2" rx="1" />
-                                                <rect opacity="0.3" transform="translate(8.000000, 8.000000) rotate(-270.000000) translate(-8.000000, -8.000000) " x="0" y="7" width="16" height="2" rx="1" />
-                                            </g>
-                                        </g>
-                                    </svg><!--end::Svg Icon-->
-                                </span>
-                            </div>
-                            <!--end::Close-->
                         </div>
                         <!--end::Modal header-->
                         <!--begin::Modal body-->
-                        <div class="modal-body pt-0 pb-20 px-lg-17">
-                            <!--begin::Row-->
-                            <div class="d-flex">
-                                <!--begin::Icon-->
-                                <i class="ki-duotone ki-calendar-8 fs-1 text-muted me-5"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span><span class="path6"></span></i>                    <!--end::Icon-->
-
-                                <div class="mb-9">
-                                    <!--begin::Event name-->
-                                    <div class="d-flex align-items-center mb-2">
-                                        <span class="fs-3 fw-bold me-3" data-kt-calendar="event_name">Reporting</span> <span class="badge badge-light-success" data-kt-calendar="all_day"></span>
-                                    </div>
-                                    <!--end::Event name-->
-                                    <!--begin::Event description-->
-                                    <div class="fs-6" data-kt-calendar="event_description">Lorem ipsum dolor incid idunt ut labore</div>
-                                    <!--end::Event description-->
+                        <div class="modal-body bg-white p-5">
+                            <!-- Event Info Section -->
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="bi bi-type fs-2 text-primary me-3"></i>
+                                <div>
+                                    <h4 class="mb-0 fw-semibold" data-kt-calendar="event_name">Reporting</h4>
                                 </div>
                             </div>
-                            <!--end::Row-->
-                            <!--begin::Row-->
-                            <div class="d-flex align-items-center mb-2">
-                                <!--begin::Bullet-->
-                                <span class="bullet bullet-dot h-10px w-10px bg-success ms-2 me-7"></span>
-                                <!--end::Bullet-->
-                                <!--begin::Event start date/time-->
-                                <div class="fs-6"><span class="fw-bold">Starts</span> <span data-kt-calendar="event_start_date">14th May, 2025 - 1:30 pm</span></div>
-                                <!--end::Event start date/time-->
+                            <span class="badge bg-success text-white small" data-kt-calendar="all_day">@localizer["allDay"]</span>
+
+                            <!-- وصف الحدث -->
+                            <div class="d-flex align-items-center mb-4">
+                                <i class="bi bi-text-left fs-2 text-info me-3"></i>
+                                <div>
+                                    <p class="mb-0 text-muted" data-kt-calendar="event_description">
+                                        Lorem ipsum dolor incid idunt ut labore
+                                    </p>
+                                </div>
                             </div>
-                            <!--end::Row-->
-                            <!--begin::Row-->
-                            <div class="d-flex align-items-center mb-9">
-                                <!--begin::Bullet-->
-                                <span class="bullet bullet-dot h-10px w-10px bg-danger ms-2 me-7"></span>
-                                <!--end::Bullet-->
-                                <!--begin::Event end date/time-->
-                                <div class="fs-6"><span class="fw-bold">Ends</span> <span data-kt-calendar="event_end_date">14th May, 2025 - 2:30 pm</span></div>
-                                <!--end::Event end date/time-->
+
+                            <!-- Start Date -->
+                            <div class="d-flex align-items-center mb-3">
+                                <span class="bullet bg-success h-10px w-10px me-3"></span>
+                                <div>
+                                    <strong class="text-dark">@localizer["start"]:</strong>
+                                    <span class="text-muted ms-1" data-kt-calendar="event_start_date">14th May, 2025 - 1:30 pm</span>
+                                </div>
                             </div>
-                            <!--end::Row-->
-                            <!--begin::Row-->
+
+                            <!-- End Date -->
+                            <div class="d-flex align-items-center mb-4">
+                                <span class="bullet bg-danger h-10px w-10px me-3"></span>
+                                <div>
+                                    <strong class="text-dark">@localizer["end"]:</strong>
+                                    <span class="text-muted ms-1" data-kt-calendar="event_end_date">14th May, 2025 - 2:30 pm</span>
+                                </div>
+                            </div>
+
+                            <!-- Location -->
                             <div class="d-flex align-items-center">
-                                <!--begin::Icon-->
-                                <i class="ki-duotone ki-geolocation fs-1 text-muted me-5"><span class="path1"></span><span class="path2"></span></i>                    <!--end::Icon-->
-                                <!--begin::Event location-->
-                                <div class="fs-6" data-kt-calendar="event_location">Meeting Room 7.03</div>
-                                <!--end::Event location-->
+                                <i class="bi bi-geo-alt fs-4 text-secondary me-3"></i>
+                                <span class="text-muted fs-6" data-kt-calendar="event_location">Meeting Room 7.03</span>
                             </div>
-                            <!--end::Row-->
                         </div>
                         <!--end::Modal body-->
                     </div>
+
+
                 </div>
             </div>
             <!--end::Modal - New Product--><!--end::Modals-->
@@ -333,6 +314,8 @@
     <script>
         window.isManager = @User.IsInRole(DefaultRoles.Manager).ToString().ToLower();
     </script>
+    <script src="~/assets/plugins/tinymce/tinymce.bundle.js"></script>
+    <script src="~/assets/plugins/flatpickr/l10n/ar.js"></script>
     <script src="~/assets/plugins/microsoft-signalr/signalr.min.js"></script>
     <script src="~/assets/plugins/calendar/fullcalendar.bundle.js"></script>
     <script src="~/assets/plugins/datatables/datatables.bundle.js"></script>

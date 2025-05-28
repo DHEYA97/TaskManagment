@@ -125,14 +125,13 @@ function checkForUpcomingEvents(calendarInstance) {
         events.forEach(event => {
             const eventId = event.id;
             const eventStart = moment(event.start);
-            const timeDiff = eventStart.diff(now, 'minutes', true); // وقت متبقي بالدقائق (بدقة عشرية)
+            const timeDiff = eventStart.diff(now, 'minutes', true); 
             
-            // أوقات التنبيه المطلوبة
             const reminderTimes = [5, 3, 1];
             
             reminderTimes.forEach(reminderTime => {
                 const timeWindowStart = reminderTime;
-                const timeWindowEnd = reminderTime - 0.5; // نطاق 30 ثانية
+                const timeWindowEnd = reminderTime - 0.5; 
                 
                 if (timeDiff <= timeWindowStart && timeDiff > timeWindowEnd) {
                     if (!lastReminderTimes[eventId] || 
@@ -142,7 +141,6 @@ function checkForUpcomingEvents(calendarInstance) {
                         console.log(`تذكير: "${event.title}" بعد ${reminderTime} دقائق`);
                         showReminder(event.title, reminderTime);
                         
-                        // تحديث وقت آخر تذكير
                         if (!lastReminderTimes[eventId]) {
                             lastReminderTimes[eventId] = {};
                         }
@@ -151,7 +149,6 @@ function checkForUpcomingEvents(calendarInstance) {
                 }
             });
             
-            // تذكير عند البدء (نطاق ±30 ثانية)
             if (Math.abs(timeDiff) <= 0.5) {
                 if (!lastReminderTimes[eventId]?.started) {
                     console.log(`تذكير: "${event.title}" بدأت الآن`);
@@ -160,7 +157,6 @@ function checkForUpcomingEvents(calendarInstance) {
                     lastReminderTimes[eventId].started = true;
                 }
             } else {
-                // إعادة تعيين التذكير عند تجاوز وقت الحدث
                 if (lastReminderTimes[eventId]?.started) {
                     delete lastReminderTimes[eventId].started;
                 }
@@ -229,6 +225,18 @@ function playNotificationSound() {
     audio.play().catch(e => console.error("تعذر تشغيل الصوت:", e));
 }
 
+function setEditorContentSafely(content) {
+    var n = tinymce.get('calendar_event_description');
+
+    if (n) {
+        n.setContent(content);
+    } else {
+        setTimeout(function () {
+            setEditorContentSafely(content);
+        }, 100);
+    }
+}
+
     const M = () => {
         (v.innerText = localization.AddnewEvent), u.show();
         const o = f.querySelectorAll('[data-kt-calendar="datepicker"]'),
@@ -254,37 +262,43 @@ function playNotificationSound() {
                                     (D.disabled = !0),
                                     setTimeout(function () {
                                         D.removeAttribute("data-kt-indicator"),
-                                            u.hide(), (D.disabled = !1);
-                                            let o = !1;
-                                            i.checked && (o = !0),
-                                                0 === c.selectedDates.length && (o = !0);
-                                            var d = moment(r.selectedDates[0]).format(),
-                                                s = moment(
-                                                l.selectedDates[l.selectedDates.length - 1]
-                                                ).format();
-                                            if (!o) {
-                                                const e = moment(r.selectedDates[0]).format(
-                                                    "YYYY-MM-DD"
-                                                ),
-                                                t = e;
-                                                (d =
-                                                e +
-                                                "T" +
-                                                moment(c.selectedDates[0]).format(
-                                                    "HH:mm:ss"
-                                                )),
-                                                (s =
-                                                    t +
-                                                    "T" +
-                                                    moment(m.selectedDates[0]).format(
-                                                    "HH:mm:ss"
-                                                    ));
+                                        u.hide(), 
+                                        D.disabled = !1;
+
+                                        let o = !1;
+                                        i.checked && (o = !0);
+                                        0 === c.selectedDates.length && (o = !0);
+
+                                        let d = r.selectedDates[0]?.toISOString() ?? "";
+                                        let s = l.selectedDates[l.selectedDates.length - 1]?.toISOString() ?? "";
+
+                                        if (!o) {
+                                            const e = r.selectedDates[0];
+                                            const tDate = e ? new Date(e) : null;
+
+                                            const startTime = c.selectedDates[0];
+                                            const endTime = m.selectedDates[0];
+
+                                            if (tDate && startTime && endTime) {
+                                                    const start = new Date(tDate);
+                                                    start.setHours(startTime.getHours(), startTime.getMinutes(), 0, 0);
+
+                                                    const end = new Date(tDate);
+                                                    end.setHours(endTime.getHours(), endTime.getMinutes(), 0, 0);
+
+                                                    const eFormatted = start.toISOString().split('T')[0];
+                                                    const t = eFormatted;
+
+                                                    d = `${eFormatted}T${startTime.toTimeString().slice(0, 8)}`;
+                                                    s = `${eFormatted}T${endTime.toTimeString().slice(0, 8)}`;
+                                                }
                                             }
                                             const token = $('input[name="__RequestVerificationToken"]').val();
+                                            var v = tinymce.get('calendar_event_description').getContent();
                                             const newEvent = {
-                                                                id: A(),
+                                                id: A(),
                                                                 title: t.value,
-                                                                description: n.value,
+                                                                description: v,
                                                                 location: a.value,
                                                                 start: d,
                                                                 end: s,
@@ -357,20 +371,41 @@ function playNotificationSound() {
     },
         B = () => {
             var e, t, n;
-            w.show(),
-                E.allDay
-                    ? ((e = "All Day"),
-                        (t = moment(E.startDate).format("Do MMM, YYYY")),
-                        (n = moment(E.endDate).format("Do MMM, YYYY")))
-                    : ((e = ""),
-                        (t = moment(E.startDate).format("Do MMM, YYYY - h:mm a")),
-                        (n = moment(E.endDate).format("Do MMM, YYYY - h:mm a"))),
-                (b.innerText = E.eventName),
-                (g.innerText = e),
-                (S.innerText = E.eventDescription ? E.eventDescription : "--"),
-                (h.innerText = E.eventLocation ? E.eventLocation : "--"),
-                (T.innerText = t),
-                (Y.innerText = n);
+                w.show();
+
+                if (E.allDay) {
+                    e = localization.allDay;
+
+                    if (localization.locale === "ar") {
+                        moment.locale("ar");
+                        t = moment(E.startDate).format("D MMMM، YYYY");
+                        n = moment(E.endDate).format("D MMMM، YYYY");
+                    } else {
+                        moment.locale("en");
+                        t = moment(E.startDate).format("Do MMM, YYYY");
+                        n = moment(E.endDate).format("Do MMM, YYYY");
+                    }
+
+                } else {
+                    e = "";
+
+                    if (localization.locale === "ar") {
+                        moment.locale("ar");
+                        t = moment(E.startDate).format("D MMMM، YYYY - h:mm A");
+                        n = moment(E.endDate).format("D MMMM، YYYY - h:mm A");
+                    } else {
+                        moment.locale("en");
+                        t = moment(E.startDate).format("Do MMM, YYYY - h:mm a");
+                        n = moment(E.endDate).format("Do MMM, YYYY - h:mm a");
+                    }
+                }
+
+                b.innerText = E.eventName;
+                g.innerText = e;
+                S.innerHTML = E.eventDescription ? E.eventDescription : "--";
+                h.innerText = E.eventLocation ? E.eventLocation : "--";
+                T.innerText = t;
+                Y.innerText = n;
         },
         q = () => {
             x.addEventListener("click", (o) => {
@@ -401,27 +436,43 @@ function playNotificationSound() {
                                                 (D.disabled = !0),
                                                 setTimeout(function () {
                                                     let isAllDay = i.checked || c.selectedDates.length === 0;
-                                                    let d = moment(r.selectedDates[0]).format(),
-                                                        s = moment(
-                                                            l.selectedDates[l.selectedDates.length - 1]
-                                                        ).format();
+                                                    let d = r.selectedDates[0]?.toISOString() ?? "";
+                                                    let s = l.selectedDates[l.selectedDates.length - 1]?.toISOString() ?? "";
 
                                                     if (!isAllDay) {
-                                                        const e = moment(r.selectedDates[0]).format("YYYY-MM-DD"),
-                                                            t = e;
-                                                        d = e + "T" + moment(c.selectedDates[0]).format("HH:mm:ss");
-                                                        s = t + "T" + moment(m.selectedDates[0]).format("HH:mm:ss");
+                                                        const e = r.selectedDates[0];
+                                                        const tDate = e ? new Date(e) : null;
+
+                                                        const startTime = c.selectedDates[0];
+                                                        const endTime = m.selectedDates[0];
+
+                                                        if (tDate && startTime && endTime) {
+                                                            const start = new Date(tDate);
+                                                            start.setHours(startTime.getHours(), startTime.getMinutes(), 0, 0);
+
+                                                            const end = new Date(tDate);
+                                                            end.setHours(endTime.getHours(), endTime.getMinutes(), 0, 0);
+
+                                                            const eFormatted = start.toISOString().split('T')[0];
+                                                            const t = eFormatted;
+
+                                                            d = `${eFormatted}T${startTime.toTimeString().slice(0, 8)}`;
+                                                            s = `${eFormatted}T${endTime.toTimeString().slice(0, 8)}`;
+                                                        }
                                                     }
+
+                                                    var v = tinymce.get('calendar_event_description').getContent();
 
                                                     const eventData = {
                                                         Id: E.id,
                                                         Name: t.value,
-                                                        Description: n.value,
+                                                        Description: v,
                                                         Location: a.value,
                                                         StartDate: d,
                                                         EndDate: s,
                                                         __RequestVerificationToken: document.querySelector('input[name="__RequestVerificationToken"]')?.value
                                                     };
+
                                                     console.log("------------Begin Edit ------------");
                                                     console.log("eventData",eventData);
                                                     $.ajax({
@@ -529,7 +580,7 @@ function playNotificationSound() {
         },
         C = () => {
             (t.value = E.eventName ? E.eventName : ""),
-                (n.value = E.eventDescription ? E.eventDescription : ""),
+                (setEditorContentSafely(E.eventDescription ? E.eventDescription : "")),
                 (a.value = E.eventLocation ? E.eventLocation : ""),
                 r.setDate(E.startDate, !0, "Y-m-d");
             const e = E.endDate ? E.endDate : moment(E.startDate).format();
@@ -565,7 +616,7 @@ function playNotificationSound() {
             const C = document.getElementById("kt_modal_add_event");
             (f = C.querySelector("#kt_modal_add_event_form")),
                 (t = f.querySelector('[name="calendar_event_name"]')),
-                (n = f.querySelector('[name="calendar_event_description"]')),
+                (n = tinymce.get('calendar_event_description')),
                 (a = f.querySelector('[name="calendar_event_location"]')),
                 (o = f.querySelector("#kt_calendar_datepicker_start_date")),
                 (i = f.querySelector("#kt_calendar_datepicker_end_date")),
@@ -681,28 +732,25 @@ function playNotificationSound() {
                                     message: localization.startDateInvalid,
                                     callback: function (input) {
                                         const isAllDay = document.getElementById('kt_calendar_datepicker_allday').checked;
-                                        const date = new Date(input.value);
+                                        const dateInput = input.value;
                                         const now = new Date();
+
+                                        if (!dateInput) return false;
+
+                                        const date = flatpickr.parseDate(dateInput, "Y-m-d");
+
+                                        if (!date) return false;
 
                                         if (isAllDay) {
                                             const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
                                             const selectedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-                                            console.log("-----Begin Start AllDay-----")
-                                            console.log(startDate.getTime());
-                                            console.log(endDate.getTime());
-                                            console.log("-----Last Start AllDay------")
                                             return selectedDate >= today;
                                         } else {
                                             const timeInput = document.getElementById('kt_calendar_datepicker_start_time');
-                                            if (!timeInput) return false;
+                                            if (!timeInput || !timeInput.value) return false;
 
                                             const [hours, minutes] = timeInput.value.split(':').map(Number);
                                             date.setHours(hours, minutes, 0, 0);
-                                            console.log("-----Begin Start------")
-                                            console.log(startDate.getTime());
-                                            console.log(endDate.getTime());
-                                            console.log("-----Last Start------")
-                                            
                                             return date.getTime() >= now.getTime();
                                         }
                                     }
@@ -721,19 +769,23 @@ function playNotificationSound() {
                                         const startDateInput = document.querySelector('[name="calendar_event_start_date"]');
                                         if (!startDateInput) return false;
 
-                                        const startDate = new Date(startDateInput.value);
-                                        const endDate = new Date(input.value);
+                                        const startDate = flatpickr.parseDate(startDateInput.value, "Y-m-d");
+                                        const endDate = flatpickr.parseDate(input.value, "Y-m-d");
                                         const now = new Date();
+
+                                        if (!startDate || !endDate) return false;
 
                                         if (isAllDay) {
                                             const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
                                             const selectedEnd = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
                                             const selectedStart = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
-                                            console.log("------Begin End AllDay------")
-                                            console.log(startDate.getTime());
-                                            console.log(endDate.getTime());
-                                            console.log(now.getTime());
-                                            console.log("------Last End AllDay------")
+
+                                            console.log("------Begin End AllDay------");
+                                            console.log(selectedStart.getTime());
+                                            console.log(selectedEnd.getTime());
+                                            console.log(today.getTime());
+                                            console.log("------Last End AllDay------");
+
                                             return selectedEnd >= today && selectedEnd >= selectedStart;
                                         } else {
                                             const startTimeInput = document.getElementById('kt_calendar_datepicker_start_time');
@@ -745,11 +797,13 @@ function playNotificationSound() {
 
                                             startDate.setHours(startHours, startMinutes, 0, 0);
                                             endDate.setHours(endHours, endMinutes, 0, 0);
-                                            console.log("------Begin End------")
+
+                                            console.log("------Begin End------");
                                             console.log(startDate.getTime());
                                             console.log(endDate.getTime());
                                             console.log(now.getTime());
-                                            console.log("------Last End------")
+                                            console.log("------Last End------");
+
                                             return endDate.getTime() >= now.getTime() && endDate.getTime() > startDate.getTime();
                                         }
                                     }
@@ -766,17 +820,35 @@ function playNotificationSound() {
                         }),
                     },
                 })),
-                (r = flatpickr(o, { enableTime: !1, dateFormat: "Y-m-d" })),
-                (l = flatpickr(i, { enableTime: !1, dateFormat: "Y-m-d" })),
+                (r = flatpickr(o, {
+                    enableTime: !1,
+                    dateFormat: "Y-m-d",
+                    locale: localization.locale === "ar" ? "ar" : "default",
+                    altInput: true,
+                    altFormat: localization.locale === "ar" ? "d F Y" : "F j, Y",
+                })),
+                (l = flatpickr(i, {
+                    enableTime: !1,
+                    dateFormat: "Y-m-d",
+                    locale: localization.locale === "ar" ? "ar" : "default",
+                    altInput: true,
+                    altFormat: localization.locale === "ar" ? "d F Y" : "F j, Y",
+                })),
                 (c = flatpickr(d, {
                     enableTime: !0,
                     noCalendar: !0,
                     dateFormat: "H:i",
+                    locale: localization.locale === "ar" ? "ar" : "default",
+                    altInput: true,
+                    altFormat: "h:i K",
                 })),
                 (m = flatpickr(s, {
                     enableTime: !0,
                     noCalendar: !0,
                     dateFormat: "H:i",
+                    locale: localization.locale === "ar" ? "ar" : "default",
+                    altInput: true,
+                    altFormat: "h:i K",
                 })),
                 q(),
                 y.addEventListener("click", (e) => {

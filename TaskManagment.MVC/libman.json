@@ -26,6 +26,21 @@
       "files": [
         "signalr.min.js"
       ]
+    },
+    {
+      "library": "flatpickr@4.6.13",
+      "destination": "wwwroot/assets/Plugins/flatpickr/",
+      "files": [
+        "flatpickr.min.js",
+        "l10n/ar.js"
+      ]
+    },
+    {
+      "library": "moment.js@2.30.1",
+      "destination": "wwwroot/assets/Plugins/moment.js/",
+      "files": [
+        "locale/ar.min.js"
+      ]
     }
   ]
 }
